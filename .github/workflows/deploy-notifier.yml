@@ -1,0 +1,21 @@
+name: Create deployment notification
+on:
+  repository_dispatch:
+    types: [ successful-deployment ]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send TG message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.CHAT_ID }}
+          token: ${{ secrets.BOT_TOKEN }}
+          message: |
+            ${{ github.event.client_payload.actor }} deployed ${{ secrets.DOCKER_IMAGE_NAME }} with new version ${{ github.event.client_payload.version }} on the server
+
+            🐳 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.event.client_payload.version }}
+            🔗 ${{ github.server_url }}/${{ github.event.client_payload.repo }}/actions
+            
+            #deployment
