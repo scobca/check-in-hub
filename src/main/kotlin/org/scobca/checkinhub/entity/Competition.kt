@@ -10,7 +10,7 @@ import java.time.Instant
 @Table("competitions")
 data class Competition(
     @Id
-    val id: Long,
+    val id: Long? = null,
 
     @Column
     var name: String,
