@@ -13,7 +13,7 @@ data class Competition(
     val id: Long,
 
     @Column
-    val name: String,
+    var name: String,
 
     @CreatedDate
     var createdAt: Instant?,
