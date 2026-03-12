@@ -57,11 +57,7 @@ class CompetitionService(
                 if (exists) {
                     Mono.error(DoubleRecordException("Компетенция '${item.name}' уже существует."))
                 } else {
-                    val competition = competitionMapper.competitionFromDto(item)
-                    competition.createdAt = Instant.now()
-                    competition.updatedAt = competition.createdAt
-
-                    repository.save(competition)
+                    repository.save(competitionMapper.competitionFromDto(item))
                 }
             }
     }
