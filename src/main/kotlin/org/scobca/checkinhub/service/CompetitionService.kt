@@ -3,6 +3,7 @@ package org.scobca.checkinhub.service
 import org.scobca.checkinhub.dto.competition.CompetitionNamesOutputDto
 import org.scobca.checkinhub.dto.competition.CreateCompetitionDto
 import org.scobca.checkinhub.dto.competition.UpdateCompetitionDto
+import org.scobca.checkinhub.dto.filters.CompetitionFilters
 import org.scobca.checkinhub.entity.Competition
 import org.scobca.checkinhub.exception.DoubleRecordException
 import org.scobca.checkinhub.exception.NotFoundException
@@ -10,7 +11,6 @@ import org.scobca.checkinhub.interfaces.ReactiveCrudService
 import org.scobca.checkinhub.mapper.CompetitionMapper
 import org.scobca.checkinhub.repository.CompetitionRepository
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,15 +23,13 @@ import java.time.Instant
 class CompetitionService(
     private val repository: CompetitionRepository,
     private val competitionMapper: CompetitionMapper,
-) : ReactiveCrudService<Long, Competition, CreateCompetitionDto, UpdateCompetitionDto> {
+) : ReactiveCrudService<Long, Competition, CreateCompetitionDto, UpdateCompetitionDto, CompetitionFilters> {
 
     override fun getAll(
         pageable: Pageable,
+        filters: CompetitionFilters,
     ): Mono<Page<Competition>> {
-        return repository.findAll(pageable)
-            .collectList()
-            .zipWith(repository.count())
-            .map { page -> PageImpl(page.t1, pageable, page.t2) }
+        return repository.findAll(filters, pageable)
     }
 
     override fun getById(id: Long): Mono<Competition> {
@@ -59,7 +57,11 @@ class CompetitionService(
                 if (exists) {
                     Mono.error(DoubleRecordException("Компетенция '${item.name}' уже существует."))
                 } else {
-                    repository.save(competitionMapper.competitionFromDto(item))
+                    val competition = competitionMapper.competitionFromDto(item)
+                    competition.createdAt = Instant.now()
+                    competition.updatedAt = competition.createdAt
+
+                    repository.save(competition)
                 }
             }
     }

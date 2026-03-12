@@ -4,8 +4,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import reactor.core.publisher.Mono
 
-interface ReactiveCrudService<ID: Any, RES: Any, CREATE: Any, UPDATE: Any> {
-    fun getAll(pageable: Pageable): Mono<Page<RES>>
+interface ReactiveCrudService<ID: Any, RES: Any, CREATE: Any, UPDATE: Any, FILTER: FilterDtoClass> {
+    fun getAll(pageable: Pageable, filters: FILTER): Mono<Page<RES>>
 
     fun getById(id: ID): Mono<RES>
 

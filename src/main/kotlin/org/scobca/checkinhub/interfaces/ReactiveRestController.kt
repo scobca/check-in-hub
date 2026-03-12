@@ -1,13 +1,13 @@
 package org.scobca.checkinhub.interfaces
 
 import org.scobca.checkinhub.io.BasicSuccessfulResponse
-import org.scobca.checkinhub.dto.PageRequestDto
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import reactor.core.publisher.Mono
 
-interface ReactiveRestController<ID: Any, RES: Any, CREATE: Any, UPDATE: Any> {
+interface ReactiveRestController<ID: Any, RES: Any, CREATE: Any, UPDATE: Any, FILTER: FilterDtoClass> {
 
-    fun getAll(req: PageRequestDto): Mono<BasicSuccessfulResponse<Page<RES>>>
+    fun getAll(pageable: Pageable, filter: FILTER): Mono<BasicSuccessfulResponse<Page<RES>>>
 
     fun getById(id: ID): Mono<BasicSuccessfulResponse<RES>>
 
