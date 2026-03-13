@@ -25,14 +25,14 @@ data class Records(
     val competitionId: Long,
 
     @Column
-    var ageCategory: AgeCategory,
+    val ageCategory: AgeCategory,
 
     @Column
-    var result: CompetitionResult,
+    val result: CompetitionResult,
 
     @CreatedDate
-    var createdAt: Instant,
+    var createdAt: Instant?,
 
     @LastModifiedDate
-    var updatedAt: Instant,
+    var updatedAt: Instant?,
 )
