@@ -63,6 +63,28 @@ class CompetitionService(
     }
 
     @Transactional
+    fun createBatch(items: List<CreateCompetitionDto>): Mono<List<Competition>> {
+        if (items.isEmpty()) return Mono.just(emptyList())
+        val competitionsToSave = items.map { competitionMapper.competitionFromDto(it) }
+
+        return repository.findAllByNameIn(items.map { it.name })
+            .collectList()
+            .flatMap { existingNames ->
+                val existingNamesSet = existingNames.map { it.name }.toSet()
+                val duplicates = items.filter { it.name in existingNamesSet }
+
+                if (duplicates.isNotEmpty()) {
+                    val duplicateNames = duplicates.joinToString(", ") { "'${it.name}'" }
+                    return@flatMap Mono.error(DoubleRecordException("Компетенции уже существуют: $duplicateNames"))
+                }
+
+                repository.saveAll(competitionsToSave)
+                    .collectList()
+            }
+    }
+
+
+    @Transactional
     override fun update(
         id: Long,
         item: UpdateCompetitionDto

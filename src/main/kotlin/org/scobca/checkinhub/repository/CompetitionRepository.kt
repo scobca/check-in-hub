@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono
 @Repository
 interface CompetitionRepository : ReactiveCrudRepository<Competition, Long>, SpecsCompetitionRepository {
     fun findByName(name: String): Mono<Competition>
+    fun findAllByNameIn(name: List<String>): Flux<Competition>
 
     @Query("SELECT name FROM competitions")
     fun findCompetitionsNames(): Flux<String>
