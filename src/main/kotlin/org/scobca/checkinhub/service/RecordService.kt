@@ -4,6 +4,7 @@ import org.scobca.checkinhub.dto.filters.RecordsFilters
 import org.scobca.checkinhub.dto.record.CreateRecordDto
 import org.scobca.checkinhub.dto.record.UpdateRecordDto
 import org.scobca.checkinhub.entity.Records
+import org.scobca.checkinhub.enums.Attendance
 import org.scobca.checkinhub.exception.NotFoundException
 import org.scobca.checkinhub.interfaces.ReactiveCrudService
 import org.scobca.checkinhub.mapper.RecordMapper
@@ -39,7 +40,7 @@ class RecordService(
     override fun create(item: CreateRecordDto): Mono<Records> {
         return competitionService.getById(item.competitionId)
             .switchIfEmpty(Mono.error(NotFoundException("Компетенция с ID ${item.competitionId} не найдена.")))
-            .flatMap { repository.save(recordMapper.recordFromDto(item)) }
+            .flatMap { repository.save(recordMapper.recordFromDto(item, Attendance.NOT_STATED)) }
     }
 
     @Transactional
