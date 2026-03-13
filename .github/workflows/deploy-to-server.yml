@@ -1,0 +1,86 @@
+name: Deploy esc-task-tracker
+on:
+  repository_dispatch:
+    types: [ new-image-published ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Версия образа (по умолчанию latest)'
+        required: false
+        default: 'latest'
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Setup SSH key
+        run: |
+          echo '${{ secrets.SERVER_SSH_KEY }}' > key.pem
+          chmod 600 key.pem
+
+      - name: Test SSH connection
+        run: ssh -i key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 22 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "echo '✅ SSH работает!'"
+
+      - name: Deploy esc-task-tracker
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USERNAME }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+        run: |
+          echo "$SERVER_SSH_KEY" > key.pem
+          chmod 600 key.pem
+
+          ssh -i key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            -p 22 "$SERVER_USER@$SERVER_HOST" "
+              echo 'Deploying latest esc-task-tracker...';
+              cd ~/esc-task-tracker || exit 1;
+
+              # Backup .env
+              cp .env .env.backup.\$(date +%Y%m%d_%H%M%S) || true;
+
+              docker compose pull esc-task-tracker;
+
+              # Graceful stop only app
+              docker compose stop esc-task-tracker;
+
+              # Recreate only app
+              docker compose up -d --force-recreate esc-task-tracker;
+
+              sleep 15;
+              if docker compose ps esc-task-tracker | grep -q 'Up'; then 
+                echo 'Deployed latest';
+                docker compose logs --tail=10 esc-task-tracker;
+              else 
+                echo 'Failed'; exit 1; 
+              fi
+            "
+
+      - name: Extract version
+        id: extract_version
+        run: |
+          if [ "${{ github.event.client_payload.version }}" != "" ]; then
+            echo "version=${{ github.event.client_payload.version }}" >> $GITHUB_OUTPUT
+            echo "Using version from build: ${{ github.event.client_payload.version }}"
+          elif [ "${{ github.event.inputs.version }}" != "" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+            echo "Using manual version: ${{ github.event.inputs.version }}"
+          else
+            echo "version=latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger notification workflow
+        if: success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          event-type: successful-deployment
+          client-payload: |
+            {
+              "version": "${{ steps.extract_version.outputs.version }}",
+              "actor": "${{ github.actor }}",
+              "repo": "${{ github.repository }}"
+            }
+      
