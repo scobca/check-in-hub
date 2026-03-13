@@ -24,7 +24,7 @@ jobs:
       - name: Test SSH connection
         run: ssh -i key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 22 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "echo '✅ SSH работает!'"
 
-      - name: Deploy esc-task-tracker
+      - name: Deploy check-in-hub
         env:
           SERVER_USER: ${{ secrets.SERVER_USERNAME }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
@@ -35,24 +35,24 @@ jobs:
 
           ssh -i key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
             -p 22 "$SERVER_USER@$SERVER_HOST" "
-              echo 'Deploying latest esc-task-tracker...';
-              cd ~/esc-task-tracker || exit 1;
+              echo 'Deploying latest check-in-hub...';
+              cd ~/check-in-hub || exit 1;
 
               # Backup .env
               cp .env .env.backup.\$(date +%Y%m%d_%H%M%S) || true;
 
-              docker compose pull esc-task-tracker;
+              docker compose pull cs-check-in-hub;
 
               # Graceful stop only app
-              docker compose stop esc-task-tracker;
+              docker compose stop cs-check-in-hub;
 
               # Recreate only app
-              docker compose up -d --force-recreate esc-task-tracker;
+              docker compose up -d --force-recreate cs-check-in-hub;
 
               sleep 15;
-              if docker compose ps esc-task-tracker | grep -q 'Up'; then 
+              if docker compose ps cs-check-in-hub | grep -q 'Up'; then 
                 echo 'Deployed latest';
-                docker compose logs --tail=10 esc-task-tracker;
+                docker compose logs --tail=10 cs-check-in-hub;
               else 
                 echo 'Failed'; exit 1; 
               fi
