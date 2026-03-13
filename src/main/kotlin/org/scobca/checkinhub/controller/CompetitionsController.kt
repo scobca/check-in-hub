@@ -8,15 +8,20 @@ import org.scobca.checkinhub.entity.Competition
 import org.scobca.checkinhub.interfaces.ReactiveRestController
 import org.scobca.checkinhub.io.BasicSuccessfulResponse
 import org.scobca.checkinhub.service.CompetitionService
+import org.scobca.checkinhub.utils.CompetitionsFromExcelUtil
+import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.MediaType
+import org.springframework.http.codec.multipart.FilePart
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/competitions")
 class CompetitionsController(
-    private val service: CompetitionService
+    private val service: CompetitionService,
+    private val competitionsFromExcelUtil: CompetitionsFromExcelUtil
 ) : ReactiveRestController<Long, Competition, CreateCompetitionDto, UpdateCompetitionDto, CompetitionFilters> {
 
     @GetMapping
@@ -52,6 +57,27 @@ class CompetitionsController(
             .map { BasicSuccessfulResponse(it) }
     }
 
+    @PostMapping("/createAll", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun createAll(@RequestPart("file") filePart: Mono<FilePart>): Mono<BasicSuccessfulResponse<List<Competition>>> {
+        return filePart
+            .flatMap { part ->
+                DataBufferUtils.join(part.content())
+                    .map { buffer ->
+                        val bytes = ByteArray(buffer.readableByteCount())
+                        buffer.read(bytes)
+                        DataBufferUtils.release(buffer)
+                        bytes.inputStream()
+                    }
+                    .map { inputStream ->
+                        inputStream.use { competitionsFromExcelUtil.parse(it) }
+                    }
+            }
+            .flatMap { dtos ->
+                service.createBatch(dtos)
+                    .map { BasicSuccessfulResponse(it) }
+            }
+    }
+
     @PatchMapping("/{id}")
     override fun update(
         @PathVariable id: Long,
@@ -67,7 +93,9 @@ class CompetitionsController(
             .map { BasicSuccessfulResponse(it) }
     }
 
+    @DeleteMapping
     override fun deleteAll(): Mono<BasicSuccessfulResponse<String>> {
-        return Mono.just(BasicSuccessfulResponse(""))
+        return service.deleteAll()
+            .map { BasicSuccessfulResponse(it) }
     }
 }
