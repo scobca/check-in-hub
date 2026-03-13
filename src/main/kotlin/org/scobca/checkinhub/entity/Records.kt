@@ -1,6 +1,7 @@
 package org.scobca.checkinhub.entity
 
 import org.scobca.checkinhub.enums.AgeCategory
+import org.scobca.checkinhub.enums.Attendance
 import org.scobca.checkinhub.enums.CompetitionResult
 import org.scobca.checkinhub.enums.Flows
 import org.springframework.data.annotation.CreatedDate
@@ -29,6 +30,9 @@ data class Records(
 
     @Column
     val result: CompetitionResult,
+
+    @Column
+    val attendance: Attendance,
 
     @CreatedDate
     var createdAt: Instant?,
