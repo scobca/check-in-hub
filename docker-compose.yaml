@@ -10,12 +10,26 @@ services:
     volumes:
       - cih-postgres-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "8295:5432"
+    networks:
+      - cih-net
+
+  cs-check-in-hub:
+    container_name: check-in-hub
+    image: scobca/check-in-hub:latest
+    restart: always
+    ports:
+      - "8287:8087"
+    volumes:
+      - cih-data:/var/
+    env_file:
+      - ./.env
     networks:
       - cih-net
 
 volumes:
   cih-postgres-data:
+  cih-data:
 
 networks:
   cih-net:
