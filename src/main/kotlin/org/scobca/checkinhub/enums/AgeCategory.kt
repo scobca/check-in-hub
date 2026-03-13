@@ -7,5 +7,9 @@ enum class AgeCategory(private val alias: String) {
 
     companion object {
         fun AgeCategory.getAlias() = this.alias
+
+        fun fromAlias(alias: String): AgeCategory? {
+            return entries.find { it.alias == alias }
+        }
     }
 }
