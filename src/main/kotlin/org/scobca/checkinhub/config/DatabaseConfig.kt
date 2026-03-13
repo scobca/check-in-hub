@@ -10,6 +10,7 @@ import io.r2dbc.spi.ConnectionFactoryOptions.PASSWORD
 import io.r2dbc.spi.ConnectionFactoryOptions.PORT
 import io.r2dbc.spi.ConnectionFactoryOptions.USER
 import io.r2dbc.spi.Option
+import org.scobca.checkinhub.config.properties.DatabaseProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -17,7 +18,7 @@ import org.springframework.context.annotation.Configuration
  * Spring configuration class responsible for setting up the reactive PostgreSQL database connection.
  *
  * This configuration defines a bean for [ConnectionFactory], which is used by R2DBC to establish
- * non-blocking connections to the PostgreSQL database using the provided [DatabaseProperties].
+ * non-blocking connections to the PostgreSQL database using the provided [org.scobca.checkinhub.config.properties.DatabaseProperties].
  *
  * @property databaseProperties The properties containing database connection parameters such as host, port, name, username, password, and schema.
  */

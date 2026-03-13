@@ -1,4 +1,4 @@
-package org.scobca.checkinhub.config
+package org.scobca.checkinhub.config.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration

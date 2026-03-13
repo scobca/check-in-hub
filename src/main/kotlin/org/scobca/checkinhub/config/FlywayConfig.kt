@@ -3,6 +3,7 @@ package org.scobca.checkinhub.config
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.flywaydb.core.Flyway
+import org.scobca.checkinhub.config.properties.DatabaseProperties
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -13,7 +14,7 @@ import javax.sql.DataSource
  *
  * This configuration sets up a dedicated [DataSource] backed by HikariCP
  * and initializes Flyway to apply database schema migrations on startup
- * using the provided [DatabaseProperties].
+ * using the provided [org.scobca.checkinhub.config.properties.DatabaseProperties].
  *
  * @property databaseProperties The database connection properties used to build the migration data source.
  */
