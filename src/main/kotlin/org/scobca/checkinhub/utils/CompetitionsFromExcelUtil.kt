@@ -16,7 +16,7 @@ class CompetitionsFromExcelUtil {
             return sheet.drop(1)
                 .mapNotNull { row ->
                     CreateCompetitionDto(
-                        name = row.getCell(3)?.toString() ?: ""
+                        name = row.getCell(2)?.toString() ?: ""
                     )
                 }
         }
