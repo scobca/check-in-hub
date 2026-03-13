@@ -63,7 +63,7 @@ class CompetitionService(
     }
 
     @Transactional
-    fun createBatch(items: List<CreateCompetitionDto>): Mono<List<Competition>> {
+    fun createBatch(items: Collection<CreateCompetitionDto>): Mono<List<Competition>> {
         if (items.isEmpty()) return Mono.just(emptyList())
         val competitionsToSave = items.map { competitionMapper.competitionFromDto(it) }
 
