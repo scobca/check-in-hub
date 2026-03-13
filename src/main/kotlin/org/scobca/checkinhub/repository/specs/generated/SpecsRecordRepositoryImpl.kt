@@ -2,6 +2,9 @@ package org.scobca.checkinhub.repository.specs.generated
 
 import org.scobca.checkinhub.dto.filters.RecordsFilters
 import org.scobca.checkinhub.entity.Records
+import org.scobca.checkinhub.enums.AgeCategory
+import org.scobca.checkinhub.enums.CompetitionResult
+import org.scobca.checkinhub.enums.Flows
 import org.scobca.checkinhub.interfaces.CustomSpecsRepositoryImpl
 import org.scobca.checkinhub.repository.specs.SpecsRecordRepository
 import org.springframework.data.domain.Page
@@ -49,7 +52,7 @@ class SpecsRecordRepositoryImpl(
 
         specification.flow
             ?.let { flow ->
-                criteriaList.add(Criteria.where("flow").`is`(flow.name))
+                criteriaList.add(Criteria.where("flow").`is`(Flows.valueOf(flow)))
             }
 
         specification.competitionId
@@ -59,12 +62,12 @@ class SpecsRecordRepositoryImpl(
 
         specification.ageCategory
             ?.let { ageCategory ->
-                criteriaList.add(Criteria.where("age_category").`is`(ageCategory.name))
+                criteriaList.add(Criteria.where("age_category").`is`(AgeCategory.valueOf(ageCategory)))
             }
 
         specification.result
             ?.let { result ->
-                criteriaList.add(Criteria.where("result").`is`(result.name))
+                criteriaList.add(Criteria.where("result").`is`(CompetitionResult.valueOf(result)))
             }
 
         val criteria = if (criteriaList.isNotEmpty()) {
