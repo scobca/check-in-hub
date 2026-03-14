@@ -25,6 +25,9 @@ data class Records(
     @Column("competition_id")
     val competitionId: Long,
 
+    @Column("competition_name")
+    var competitionName: String? = "",
+
     @Column
     val ageCategory: AgeCategory,
 
