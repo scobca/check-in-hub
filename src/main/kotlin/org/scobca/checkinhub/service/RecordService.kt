@@ -68,6 +68,16 @@ class RecordService(
     }
 
     @Transactional
+    fun notice(id: Long, status: Attendance): Mono<Records> {
+        return getById(id)
+            .switchIfEmpty(Mono.error(NotFoundException("Запись с ID $id не найдена.")))
+            .flatMap { record ->
+                record.attendance = status
+                repository.save(record)
+            }
+    }
+
+    @Transactional
     override fun deleteById(id: Long): Mono<String> {
         return getById(id)
             .switchIfEmpty { Mono.error(NotFoundException("Записи с таким ID нет.")) }

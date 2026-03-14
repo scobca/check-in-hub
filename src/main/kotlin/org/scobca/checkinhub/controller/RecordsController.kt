@@ -4,6 +4,7 @@ import org.scobca.checkinhub.dto.filters.RecordsFilters
 import org.scobca.checkinhub.dto.record.CreateRecordDto
 import org.scobca.checkinhub.dto.record.UpdateRecordDto
 import org.scobca.checkinhub.entity.Records
+import org.scobca.checkinhub.enums.Attendance
 import org.scobca.checkinhub.interfaces.ReactiveRestController
 import org.scobca.checkinhub.io.BasicSuccessfulResponse
 import org.scobca.checkinhub.service.RecordService
@@ -69,6 +70,12 @@ class RecordsController(
         @RequestBody body: UpdateRecordDto
     ): Mono<BasicSuccessfulResponse<Records>> {
         return service.update(id, body)
+            .map { BasicSuccessfulResponse(it) }
+    }
+
+    @PatchMapping("/notice")
+    fun notice(@RequestParam id: Long, @RequestParam attendance: String): Mono<BasicSuccessfulResponse<Records>> {
+        return service.notice(id, Attendance.valueOf(attendance))
             .map { BasicSuccessfulResponse(it) }
     }
 
