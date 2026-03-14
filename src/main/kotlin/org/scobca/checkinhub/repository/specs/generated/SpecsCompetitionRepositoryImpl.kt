@@ -44,7 +44,11 @@ class SpecsCompetitionRepositoryImpl(
         specification.name
             ?.takeIf { it.isNotBlank() }
             ?.let { name ->
-                criteriaList.add(Criteria.where("name").like("%$name%"))
+                criteriaList.add(Criteria
+                    .where("name")
+                    .like("%$name%")
+                    .ignoreCase(true)
+                )
             }
 
         val criteria = if (criteriaList.isNotEmpty()) {
