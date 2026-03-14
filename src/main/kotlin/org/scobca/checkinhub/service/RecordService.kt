@@ -1,6 +1,7 @@
 package org.scobca.checkinhub.service
 
 import org.scobca.checkinhub.dto.filters.RecordsFilters
+import org.scobca.checkinhub.dto.messages.RecordsUpdateMessage
 import org.scobca.checkinhub.dto.record.CreateRecordDto
 import org.scobca.checkinhub.dto.record.UpdateRecordDto
 import org.scobca.checkinhub.entity.Records
@@ -22,6 +23,7 @@ class RecordService(
     private val repository: RecordRepository,
     private val recordMapper: RecordMapper,
     private val competitionService: CompetitionService,
+    private val updatesNotificationService: UpdatesNotificationService,
 ) : ReactiveCrudService<Long, Records, CreateRecordDto, UpdateRecordDto, RecordsFilters> {
 
     override fun getAll(
@@ -74,6 +76,9 @@ class RecordService(
             .flatMap { record ->
                 record.attendance = status
                 repository.save(record)
+            }
+            .doOnSuccess {
+                updatesNotificationService.sendMessage(RecordsUpdateMessage(id, status))
             }
     }
 
