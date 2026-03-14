@@ -44,7 +44,7 @@ class RecordService(
     }
 
     @Transactional
-    fun createBatch(items: List<CreateRecordDto>): Mono<List<Records>> {
+    fun createBatch(items: Collection<CreateRecordDto>): Mono<List<Records>> {
         if (items.isEmpty()) return Mono.just(emptyList())
         val recordsToSave = items.map { recordMapper.recordFromDto(it, attendance = Attendance.NOT_STATED) }
 
@@ -59,7 +59,7 @@ class RecordService(
     ): Mono<Records> {
         return getById(id)
             .switchIfEmpty(Mono.error(NotFoundException("Запись с ID $id не найдена.")))
-            .zipWith(item.toMono()) {record, dto ->
+            .zipWith(item.toMono()) { record, dto ->
                 dto.username?.let { record.username = it }
                 dto.flow?.let { record.flow = it }
 
