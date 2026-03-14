@@ -32,7 +32,7 @@ data class Records(
     val result: CompetitionResult,
 
     @Column
-    val attendance: Attendance,
+    var attendance: Attendance,
 
     @CreatedDate
     var createdAt: Instant?,
