@@ -45,14 +45,19 @@ class SpecsRecordRepositoryImpl(
         val criteriaList = mutableListOf<Criteria>()
 
         specification.username
+            ?.trim()
             ?.takeIf { it.isNotBlank() }
             ?.let { username ->
-                criteriaList.add(Criteria.where("username").like("%$username%"))
+                criteriaList.add(Criteria
+                    .where("username")
+                    .like("%${username.lowercase()}%")
+                    .ignoreCase(true)
+                )
             }
 
         specification.flow
             ?.let { flow ->
-                criteriaList.add(Criteria.where("flow").`is`(Flows.valueOf(flow)))
+                criteriaList.add(Criteria.where("flow").`is`(Flows.valueOf(flow)).ignoreCase(true))
             }
 
         specification.competitionId
