@@ -1,14 +1,18 @@
 package org.scobca.checkinhub.config
 
+import org.scobca.checkinhub.config.properties.CorsProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.reactive.CorsWebFilter
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebFluxSecurity
-class WebSecurityConfig {
+class WebSecurityConfig(private val corsProperties: CorsProperties) {
 
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
@@ -21,5 +25,29 @@ class WebSecurityConfig {
             .csrf { it.disable() }
             .logout { it.disable() }
             .build()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsWebFilter {
+        val corsConfig = CorsConfiguration().apply {
+            addAllowedOrigin(corsProperties.frontendLocalHost)
+            addAllowedOrigin(corsProperties.frontendDockerHost)
+            addAllowedOrigin(corsProperties.frontendProductionHost)
+
+            allowedMethods = listOf("*")
+            allowedHeaders = listOf(
+                "Content-Type",
+                "Authorization",
+                "Accept",
+                "Origin",
+                "X-Requested-With",
+            )
+
+            allowCredentials = true
+        }
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", corsConfig)
+
+        return CorsWebFilter(source)
     }
 }
