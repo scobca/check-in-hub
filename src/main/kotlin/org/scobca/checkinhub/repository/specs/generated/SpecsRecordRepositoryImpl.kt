@@ -3,6 +3,7 @@ package org.scobca.checkinhub.repository.specs.generated
 import org.scobca.checkinhub.dto.filters.RecordsFilters
 import org.scobca.checkinhub.entity.Records
 import org.scobca.checkinhub.enums.AgeCategory
+import org.scobca.checkinhub.enums.Attendance
 import org.scobca.checkinhub.enums.CompetitionResult
 import org.scobca.checkinhub.enums.Flows
 import org.scobca.checkinhub.interfaces.CustomSpecsRepositoryImpl
@@ -45,14 +46,21 @@ class SpecsRecordRepositoryImpl(
         val criteriaList = mutableListOf<Criteria>()
 
         specification.username
+            ?.trim()
             ?.takeIf { it.isNotBlank() }
             ?.let { username ->
-                criteriaList.add(Criteria.where("username").like("%$username%"))
+                criteriaList.add(Criteria
+                    .where("username")
+                    .like("%${username.lowercase()}%")
+                    .ignoreCase(true)
+                )
             }
 
         specification.flow
+            ?.trim()
+            ?.takeIf { it.isNotBlank() }
             ?.let { flow ->
-                criteriaList.add(Criteria.where("flow").`is`(Flows.valueOf(flow)))
+                criteriaList.add(Criteria.where("flow").`is`(Flows.valueOf(flow.uppercase())))
             }
 
         specification.competitionId
@@ -60,14 +68,36 @@ class SpecsRecordRepositoryImpl(
                 criteriaList.add(Criteria.where("competition_id").`is`(competitionId))
             }
 
+        specification.competitionName
+            ?.trim()
+            ?.takeIf { it.isNotBlank() }
+            ?.let { name ->
+                criteriaList.add(Criteria
+                    .where("competitionName")
+                    .like("%${name.lowercase()}%")
+                    .ignoreCase(true)
+                )
+            }
+
         specification.ageCategory
+            ?.trim()
+            ?.takeIf { it.isNotBlank() }
             ?.let { ageCategory ->
-                criteriaList.add(Criteria.where("age_category").`is`(AgeCategory.valueOf(ageCategory)))
+                criteriaList.add(Criteria.where("age_category").`is`(AgeCategory.valueOf(ageCategory.uppercase())))
             }
 
         specification.result
+            ?.trim()
+            ?.takeIf { it.isNotBlank() }
             ?.let { result ->
-                criteriaList.add(Criteria.where("result").`is`(CompetitionResult.valueOf(result)))
+                criteriaList.add(Criteria.where("result").`is`(CompetitionResult.valueOf(result.uppercase())))
+            }
+
+        specification.attendance
+            ?.trim()
+            ?.takeIf { it.isNotBlank() }
+            ?.let { attendance ->
+                criteriaList.add(Criteria.where("attendance").`is`(Attendance.valueOf(attendance.uppercase())))
             }
 
         val criteria = if (criteriaList.isNotEmpty()) {
