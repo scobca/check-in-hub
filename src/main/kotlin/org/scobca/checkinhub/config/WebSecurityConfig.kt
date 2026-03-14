@@ -35,13 +35,7 @@ class WebSecurityConfig(private val corsProperties: CorsProperties) {
             addAllowedOrigin(corsProperties.frontendProductionHost)
 
             allowedMethods = listOf("*")
-            allowedHeaders = listOf(
-                "Content-Type",
-                "Authorization",
-                "Accept",
-                "Origin",
-                "X-Requested-With",
-            )
+            allowedHeaders = listOf("*")
 
             allowCredentials = true
         }
