@@ -20,6 +20,6 @@ database:
 
 config:
   cors:
-    frontend_local_host: ${$FRONTEND_LOCAL_HOST}
+    frontend_local_host: ${FRONTEND_LOCAL_HOST}
     frontend_docker_host: ${FRONTEND_DOCKER_HOST}
-    frontend_production_host: ${$FRONTEND_PRODUCTION_HOST}
+    frontend_production_host: ${FRONTEND_PRODUCTION_HOST}

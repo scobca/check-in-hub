@@ -28,7 +28,7 @@ class WebSecurityConfig(private val corsProperties: CorsProperties) {
     }
 
     @Bean
-    fun corsConfigurationSource(): CorsWebFilter {
+    fun corsWebFilter(): CorsWebFilter {
         val corsConfig = CorsConfiguration().apply {
             addAllowedOrigin(corsProperties.frontendLocalHost)
             addAllowedOrigin(corsProperties.frontendDockerHost)
