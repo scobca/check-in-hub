@@ -33,6 +33,7 @@ val mapstructVersion: String by project
 val kotlinxSerializationVersion: String by project
 val dotenvSpringVersion: String by project
 val hikariCPVersion: String by project
+val apachePOIVersion: String by project
 
 dependencies {
     // --- Spring Boot starters ---
@@ -66,6 +67,7 @@ dependencies {
 
     // --- Utilities ---
     implementation("one.stayfocused.spring:dotenv-spring-boot:$dotenvSpringVersion")
+    implementation("org.apache.poi:poi-ooxml:$apachePOIVersion")
 
     // --- Dev tools ---
     developmentOnly("org.springframework.boot:spring-boot-devtools")

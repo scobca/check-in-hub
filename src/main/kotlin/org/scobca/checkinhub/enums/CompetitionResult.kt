@@ -7,5 +7,9 @@ enum class CompetitionResult(private val alias: String) {
 
     companion object {
         fun CompetitionResult.getAlias() = this.alias
+
+        fun fromAlias(alias: String): CompetitionResult? {
+            return CompetitionResult.entries.find { it.alias == alias }
+        }
     }
 }
